@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Disaster Management System</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+ 
+  <!-- ======= LOGIN PAGE ======= -->
+  <div id="page-login" class="page active">
+    <div class="login-container">
+      <div class="login-logo">🆘</div>
+      <h1>Disaster Management System</h1>
+      <p class="subtitle">Emergency Response Portal</p>
+ 
+      <div class="role-tabs">
+        <button class="tab-btn active" onclick="switchTab('user')">👤 User Login</button>
+        <button class="tab-btn" onclick="switchTab('admin')">🔐 Admin Login</button>
+      </div>
+ 
+      <div class="login-form">
+        <input type="text" id="login-username" placeholder="Enter Username" />
+        <input type="password" id="login-password" placeholder="Enter Password" />
+        <div id="login-error" class="error-msg"></div>
+        <button class="btn-primary" onclick="handleLogin()">LOGIN</button>
+      </div>
+ 
+      <div class="login-hint">
+        <p><b>User:</b> username: user1 | password: user123</p>
+        <p><b>Admin:</b> username: admin | password: admin123</p>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- ======= USER DASHBOARD ======= -->
+  <div id="page-user" class="page">
+    <nav class="navbar">
+      <span class="nav-logo">🆘 DisasterAlert</span>
+      <span class="nav-user" id="nav-username"></span>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </nav>
+ 
+    <div class="dashboard">
+      <div class="sidebar">
+        <button class="sidebar-btn active" onclick="showSection('sos', this)">🚨 SOS Emergency</button>
+        <button class="sidebar-btn" onclick="showSection('report', this)">📋 Report Disaster</button>
+        <button class="sidebar-btn" onclick="showSection('alerts', this)">🔔 Live Alerts</button>
+        <button class="sidebar-btn" onclick="showSection('dashboard', this)">📊 Dashboard</button>
+        <button class="sidebar-btn" onclick="showSection('map', this)">🗺️ Disaster Map</button>
+      </div>
+ 
+      <div class="content">
+ 
+        <!-- SOS SECTION -->
+        <div id="section-sos" class="section active">
+          <h2>🚨 Emergency SOS</h2>
+          <p>Press the SOS button in case of immediate danger. Your request will be sent to the nearest rescue team.</p>
+          <div class="sos-area">
+            <button class="sos-button" onclick="sendSOS()">SOS</button>
+            <p class="sos-hint">Hold to Send Emergency Alert</p>
+          </div>
+          <div id="sos-status" class="status-box" style="display:none"></div>
+          <h3 style="margin-top:30px">📍 Nearest Emergency Services</h3>
+          <div class="services-grid">
+            <div class="service-card">🚑 Ambulance<br/><small>102 / 1298</small></div>
+            <div class="service-card">🚒 Fire Brigade<br/><small>101</small></div>
+            <div class="service-card">👮 Police<br/><small>100</small></div>
+            <div class="service-card">🏥 NDRF<br/><small>011-24363260</small></div>
+          </div>
+        </div>
+ 
+        <!-- REPORT DISASTER SECTION -->
+        <div id="section-report" class="section">
+          <h2>📋 Report a Disaster</h2>
+          <p>Fill in the details below to report a disaster in your area.</p>
+          <div class="form-card">
+            <label>Type of Disaster</label>
+            <select id="disaster-type">
+              <option value="">-- Select Type --</option>
+              <option>Flood</option>
+              <option>Earthquake</option>
+              <option>Cyclone</option>
+              <option>Landslide</option>
+              <option>Fire</option>
+              <option>Drought</option>
+              <option>Other</option>
+            </select>
+ 
+            <label>Location</label>
+            <input type="text" id="disaster-location" placeholder="e.g. Vasai, Maharashtra" />
+ 
+            <label>Severity</label>
+            <select id="disaster-severity">
+              <option value="">-- Select Severity --</option>
+              <option value="low">🟢 Low - Minor impact</option>
+              <option value="medium">🟡 Medium - Moderate impact</option>
+              <option value="high">🔴 High - Severe impact</option>
+            </select>
+ 
+            <label>Description (optional)</label>
+            <textarea id="disaster-desc" placeholder="Describe what you see..."></textarea>
+ 
+            <button class="btn-primary" onclick="submitDisaster()">Submit Report</button>
+            <div id="report-status" class="status-box" style="display:none"></div>
+          </div>
+        </div>
+ 
+        <!-- LIVE ALERTS SECTION -->
+        <div id="section-alerts" class="section">
+          <h2>🔔 Live Alerts</h2>
+          <p>Real-time emergency alerts for your area.</p>
+          <div id="alerts-list"></div>
+        </div>
+ 
+        <!-- DASHBOARD SECTION -->
+        <div id="section-dashboard" class="section">
+          <h2>📊 My Dashboard</h2>
+          <p>Overview of disaster activity in your area.</p>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-number" id="stat-total">0</div>
+              <div class="stat-label">Total Reports</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number" id="stat-high">0</div>
+              <div class="stat-label" style="color:#fca5a5">High Severity</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number" id="stat-resolved">0</div>
+              <div class="stat-label" style="color:#6ee7b7">Resolved</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number" id="stat-alerts">0</div>
+              <div class="stat-label" style="color:#fbbf24">Active Alerts</div>
+            </div>
+          </div>
+          <div class="charts-row">
+            <div class="chart-card">
+              <h3>Disasters by Type</h3>
+              <canvas id="chart-type" height="220"></canvas>
+            </div>
+            <div class="chart-card">
+              <h3>Disasters by Severity</h3>
+              <canvas id="chart-severity" height="220"></canvas>
+            </div>
+          </div>
+        </div>
+ 
+        <!-- MAP SECTION -->
+        <div id="section-map" class="section">
+          <h2>🗺️ Disaster Map</h2>
+          <p>Live map showing reported disaster locations.</p>
+          <div id="map-container"></div>
+          <div id="map-legend">
+            <span class="legend-dot" style="background:#ef4444"></span> High &nbsp;
+            <span class="legend-dot" style="background:#fbbf24"></span> Medium &nbsp;
+            <span class="legend-dot" style="background:#22c55e"></span> Low
+          </div>
+        </div>
+ 
+      </div>
+      <!-- end .content -->
+ 
+    </div>
+    <!-- end .dashboard -->
+ 
+  </div>
+  <!-- end page-user -->
+ 
+  <!-- ======= ADMIN DASHBOARD ======= -->
+  <div id="page-admin" class="page">
+    <nav class="navbar admin-nav">
+      <span class="nav-logo">🛡️ Admin Panel</span>
+      <span class="nav-user" id="admin-username"></span>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </nav>
+ 
+    <div class="dashboard">
+      <div class="sidebar">
+        <button class="sidebar-btn active" onclick="showAdminSection('send-alert', this)">📢 Send Alert</button>
+        <button class="sidebar-btn" onclick="showAdminSection('resources', this)">🚛 Assign Resources</button>
+        <button class="sidebar-btn" onclick="showAdminSection('reports', this)">📊 Reports</button>
+        <button class="sidebar-btn" onclick="showAdminSection('sos-admin', this)">🆘 SOS Requests</button>
+      </div>
+ 
+      <div class="content">
+ 
+        <!-- SEND ALERT -->
+        <div id="section-send-alert" class="section active">
+          <h2>📢 Send Emergency Alert</h2>
+          <div class="form-card">
+            <label>Alert Type</label>
+            <select id="alert-type">
+              <option>Cyclone</option>
+              <option>Flood</option>
+              <option>Earthquake</option>
+              <option>Fire</option>
+              <option>Landslide</option>
+              <option>General Warning</option>
+            </select>
+            <label>Alert Message</label>
+            <textarea id="alert-message" placeholder="e.g. Cyclone alert tomorrow for coastal areas..."></textarea>
+            <button class="btn-primary" onclick="sendAlert()">📢 Broadcast Alert</button>
+            <div id="alert-sent-status" class="status-box" style="display:none"></div>
+          </div>
+          <h3 style="margin-top:30px">Active Alerts</h3>
+          <div id="admin-alerts-list"></div>
+        </div>
+ 
+        <!-- ASSIGN RESOURCES -->
+        <div id="section-resources" class="section">
+          <h2>🚛 Assign Resources</h2>
+          <div id="resources-list"></div>
+          <div class="form-card" style="margin-top:20px">
+            <h3>Assign Resource</h3>
+            <label>Select Resource</label>
+            <select id="resource-select"></select>
+            <label>Assign Quantity</label>
+            <input type="number" id="resource-qty" placeholder="e.g. 5" min="1" />
+            <label>Assign To (Location)</label>
+            <input type="text" id="resource-location" placeholder="e.g. Raigad District" />
+            <button class="btn-primary" onclick="assignResource()">Assign Resource</button>
+            <div id="resource-status" class="status-box" style="display:none"></div>
+          </div>
+        </div>
+ 
+        <!-- REPORTS -->
+        <div id="section-reports" class="section">
+          <h2>📊 Disaster Reports</h2>
+          <div id="reports-list"></div>
+        </div>
+ 
+        <!-- SOS REQUESTS -->
+        <div id="section-sos-admin" class="section">
+          <h2>🆘 SOS Requests</h2>
+          <div id="sos-admin-list"></div>
+        </div>
+ 
+      </div>
+    </div>
+  </div>
+ 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
